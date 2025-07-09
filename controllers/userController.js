@@ -79,3 +79,16 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    await User.destroy({ where: { id: userId } });
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

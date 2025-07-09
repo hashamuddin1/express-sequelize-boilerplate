@@ -36,7 +36,7 @@ exports.createUser = async (req, res) => {
     });
   } catch (err) {
     console.error("Error creating user:", err);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -49,7 +49,7 @@ exports.getUser = async (req, res) => {
     });
   } catch (err) {
     console.error("Error fetching user:", err);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -76,7 +76,7 @@ exports.updateUser = async (req, res) => {
     return res.status(200).json({ message: 'User updated successfully', user: updatedUser });
   } catch (err) {
     console.error('Error updating user:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -86,9 +86,9 @@ exports.deleteUser = async (req, res) => {
 
     await User.destroy({ where: { id: userId } });
 
-    res.status(200).json({ message: 'User deleted successfully' });
+    return res.status(200).json({ message: 'User deleted successfully' });
   } catch (err) {
     console.error('Error deleting user:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };

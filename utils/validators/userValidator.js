@@ -7,4 +7,11 @@ const createUserSchema = Joi.object({
   dob: Joi.date().required(),
 });
 
-module.exports = { createUserSchema };
+const updateUserSchema = Joi.object({
+  name: Joi.string().min(2).max(100).optional(),
+  password: Joi.string().min(6).optional(),
+  dob: Joi.date().less('now').optional(),
+  email: Joi.forbidden(), // Prevent email updates
+});
+
+module.exports = { createUserSchema,updateUserSchema };

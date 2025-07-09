@@ -1,6 +1,6 @@
 const { User } = require("../models");
 const bcrypt = require("bcrypt");
-const { createUserSchema } = require("../utils/validators/userValidator");
+const { createUserSchema,updateUserSchema } = require("../utils/validators/userValidator");
 const generateToken = require("../utils/validators/generateJwtToken");
 
 exports.createUser = async (req, res) => {
@@ -50,5 +50,32 @@ exports.getUser = async (req, res) => {
   } catch (err) {
     console.error("Error fetching user:", err);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { error, value } = updateUserSchema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
+    const { name, password, dob } = value;
+
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (dob) updateFields.dob = dob;
+    if (password) {
+      updateFields.password = await bcrypt.hash(password, 10);
+    }
+
+    await User.update(updateFields, { where: { id: req.user.id } });
+
+    const updatedUser = await User.findByPk(req.user.id, {
+      attributes: { exclude: ['password'] },
+    });
+
+    return res.status(200).json({ message: 'User updated successfully', user: updatedUser });
+  } catch (err) {
+    console.error('Error updating user:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };

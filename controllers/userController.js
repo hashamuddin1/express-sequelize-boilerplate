@@ -1,8 +1,7 @@
-const { User } = require('../models');
-const bcrypt = require('bcrypt');
-const { createUserSchema } = require('../utils/validators/userValidator');
-const generateToken = require('../utils/validators/generateJwtToken');
-
+const { User } = require("../models");
+const bcrypt = require("bcrypt");
+const { createUserSchema } = require("../utils/validators/userValidator");
+const generateToken = require("../utils/validators/generateJwtToken");
 
 exports.createUser = async (req, res) => {
   try {
@@ -15,9 +14,8 @@ exports.createUser = async (req, res) => {
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ error: 'Email already exists' });
+      return res.status(400).json({ error: "Email already exists" });
     }
-
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -32,12 +30,25 @@ exports.createUser = async (req, res) => {
 
     const { password: _, ...userData } = user.toJSON();
     return res.status(201).json({
-      message: 'User created successfully',
+      message: "User created successfully",
       user: userData,
       token,
-    });;
+    });
   } catch (err) {
-    console.error('Error creating user:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error creating user:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.getUser = async (req, res) => {
+  try {
+    const userData = await User.findOne({ where: { id: req.user.id } });
+    return res.status(201).json({
+      message: "User fetch successfully",
+      user: userData,
+    });
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

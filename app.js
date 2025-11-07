@@ -4,7 +4,6 @@ const express = require('express');
 const { sequelize } = require('./models');
 const userRoutes = require('./routes/userRoutes');
 require('dotenv').config();
-const responseTime=require("response-time")
 const port=3002
 
 const client = require('prom-client'); //metric collection
@@ -27,8 +26,6 @@ const reqResTime=new client.Histogram({
   name:"http_express_req_res_time",
   help:"this tell time"
 })
-
-// app.use()
 
 sequelize.sync().then(() => {
   app.listen(port, () => {

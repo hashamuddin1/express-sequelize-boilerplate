@@ -22,11 +22,6 @@ app.get('/metrics',async (req,res)=>{
   res.send(metrics)
 })
 
-const reqResTime=new client.Histogram({
-  name:"http_express_req_res_time",
-  help:"this tell time"
-})
-
 sequelize.sync().then(() => {
   app.listen(port, () => {
     console.log('Server is running on port 3002');

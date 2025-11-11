@@ -4,7 +4,7 @@ const express = require('express');
 const { sequelize } = require('./models');
 const userRoutes = require('./routes/userRoutes');
 require('dotenv').config();
-const port=3002
+const port=process.env.PORT
 
 const client = require('prom-client'); //metric collection
 

@@ -1,7 +1,11 @@
 const { User } = require("../models");
 const bcrypt = require("bcrypt");
-const { createUserSchema,updateUserSchema } = require("../utils/validators/userValidator");
+const {
+  createUserSchema,
+  updateUserSchema,
+} = require("../utils/validators/userValidator");
 const generateToken = require("../utils/validators/generateJwtToken");
+const logger = require("../utils/logger");
 
 exports.createUser = async (req, res) => {
   try {
@@ -14,6 +18,7 @@ exports.createUser = async (req, res) => {
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
+      logger.error("Email already exists")
       return res.status(400).json({ error: "Email already exists" });
     }
 
@@ -29,12 +34,14 @@ exports.createUser = async (req, res) => {
     const token = generateToken(user);
 
     const { password: _, ...userData } = user.toJSON();
+    logger.info("User created successfully");
     return res.status(201).json({
       message: "User created successfully",
       user: userData,
       token,
     });
   } catch (err) {
+    logger.error(err);
     console.error("Error creating user:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
@@ -43,11 +50,13 @@ exports.createUser = async (req, res) => {
 exports.getUser = async (req, res) => {
   try {
     const userData = await User.findOne({ where: { id: req.user.id } });
+    logger.info("User fetch successfully");
     return res.status(201).json({
       message: "User fetch successfully",
       user: userData,
     });
   } catch (err) {
+    logger.error(err);
     console.error("Error fetching user:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
@@ -70,13 +79,17 @@ exports.updateUser = async (req, res) => {
     await User.update(updateFields, { where: { id: req.user.id } });
 
     const updatedUser = await User.findByPk(req.user.id, {
-      attributes: { exclude: ['password'] },
+      attributes: { exclude: ["password"] },
     });
 
-    return res.status(200).json({ message: 'User updated successfully', user: updatedUser });
+    logger.info("User updated successfully");
+    return res
+      .status(200)
+      .json({ message: "User updated successfully", user: updatedUser });
   } catch (err) {
-    console.error('Error updating user:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    logger.error(err);
+    console.error("Error updating user:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -86,9 +99,11 @@ exports.deleteUser = async (req, res) => {
 
     await User.destroy({ where: { id: userId } });
 
-    return res.status(200).json({ message: 'User deleted successfully' });
+    logger.info("User deleted successfully");
+    return res.status(200).json({ message: "User deleted successfully" });
   } catch (err) {
-    console.error('Error deleting user:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    logger.error(err);
+    console.error("Error deleting user:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

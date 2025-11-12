@@ -8,7 +8,7 @@ const port = process.env.PORT;
 const responseTime = require("response-time");
 const logger = require("./utils/logger");
 
-const client = require("prom-client"); //metric collection
+const client = require("prom-client");
 
 const collectDefaultMetric = client.collectDefaultMetrics;
 
